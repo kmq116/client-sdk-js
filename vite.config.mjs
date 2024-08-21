@@ -4,6 +4,7 @@ import dns from 'dns';
 import { resolve } from 'path';
 import replace from 'rollup-plugin-re';
 import { defineConfig } from 'vite';
+import fs from "fs";
 
 dns.setDefaultResultOrder('verbatim');
 
@@ -11,6 +12,17 @@ export default defineConfig({
   server: {
     port: 8080,
     open: true,
+    https: {
+      key: fs.readFileSync("./127.0.0.2+1-key.pem"),
+      cert: fs.readFileSync("./127.0.0.2+1.pem"),
+    }, // 添加这一行来启用 HTTPS
+    proxy: {
+      '/api': {
+        target: 'https://meet.livekit.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   build: {
     minify: 'esbuild',

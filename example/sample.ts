@@ -45,10 +45,16 @@ const state = {
 let currentRoom: Room | undefined;
 
 let startTime: number;
-
+let storedToken = '';
+fetch(`/api/api/token?identity=${Date.now()}&name=hahah&roomName=5fgn-atfe`)
+  .then((res) => res.json())
+  .then((data) => {
+    console.log(data);
+    storedToken = data.accessToken;
+  });
 const searchParams = new URLSearchParams(window.location.search);
-const storedUrl = searchParams.get('url') ?? 'ws://localhost:7880';
-const storedToken = searchParams.get('token') ?? '';
+const storedUrl = searchParams.get('url') ?? 'wss://meet-uylq8icb.livekit.cloud';
+
 (<HTMLInputElement>$('url')).value = storedUrl;
 (<HTMLInputElement>$('token')).value = storedToken;
 let storedKey = searchParams.get('key');
@@ -67,8 +73,10 @@ function updateSearchParams(url: string, token: string, key: string) {
 const appActions = {
   connectWithFormInput: async () => {
     const url = (<HTMLInputElement>$('url')).value;
-    const token = (<HTMLInputElement>$('token')).value;
     const simulcast = (<HTMLInputElement>$('simulcast')).checked;
+    // const token = (<HTMLInputElement>$('token')).value;
+    const token = storedToken;
+
     const dynacast = (<HTMLInputElement>$('dynacast')).checked;
     const forceTURN = (<HTMLInputElement>$('force-turn')).checked;
     const adaptiveStream = (<HTMLInputElement>$('adaptive-stream')).checked;
